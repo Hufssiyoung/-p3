@@ -105,6 +105,9 @@ class Customer(Person):
     def membership_num(self):
         return self.__membership_num
 
+    @property
+    def membership_num(cls):
+        return cls.__customer_num
     # ======================================
 
     @classmethod
@@ -194,7 +197,9 @@ class AbstractConvenientStore(metaclass=ABCMeta):
     def change_discount_rate(self):
         print('할인율을 변경하는 메서드입니다.')
 
-
+    @abstractmethod
+    def change_discount_rate(self):
+        print('할인율을 변경하는 메서드입니다.')
 
 class ConvenientStore(AbstractConvenientStore):
     """편의점 클래스."""
@@ -217,14 +222,14 @@ class ConvenientStore(AbstractConvenientStore):
     def revenue(self):
         return self.__revenue
 
-    @classmethod
-    def get_convenient_stores(cls): #아래의 property로 바꾸는 게 좋을 듯
-        return cls.__convenient_stores
-
     # @classmethod
-    # @property
-    # def convenient_stores(cls): #property로 바꾸는 게 좋을 듯
+    # def get_convenient_stores(cls): #아래의 property로 바꾸는 게 좋을 듯
     #     return cls.__convenient_stores
+
+    @classmethod
+    @property
+    def convenient_stores(cls):
+        return cls.__convenient_stores
     # ======================================
 
     def add_customer(self, customer): #add_new_customer
@@ -305,20 +310,38 @@ class ConvenientStore(AbstractConvenientStore):
             item.price *= input_discount_rate
 
 
-def add_item(self, item_name, num):
-        if item_name not in self.inventory:
-            while True:
-                price = input(f'>>{item_name}의 가격을 입력하세요: ')
-                if not price.isdigit():
-                    raise ValueError('가격을 잘 못 입력했습니다. 다시 입력하세요.')
-                else:
-                    break
-            price = int(price)
-            self.inventory[item_name] = Item(item_name, price, price, num, 0)
+
+
+
+    # temp =================================
+
+    def delivery_service(self, person, **kargs): #**kargs: 송장에 들어갈 기본 정보
+        print("======== 편의점 배송지 목록 ==========")
+        print(self.convenient_stores())
+        print("=================================")
+        destination = input('물건을 보낼 편의점을 입력하세요>> ')
+
+        if destination in self.convenient_stores():
+            print(f'{destination} 점포로 택배를 보냅니다.')
+            addressee = kargs['addressee'] 
+            print(f'발송인 : {person.name}, 수령인 : {addressee}')
+
+            if kargs['weight'] <= 500:
+                delivery_cost = 3000
+            else:
+                delivery_cost = 3000 + (kargs['weight'] // 150) * 1000
+
+            if person.purchase(delivery_cost):
+                print(f'배송 비용은 총 {delivery_cost}원 입니다.')
+            else: 
+                print('[편의점] 잔액이 부족해 택배를 보내지 못했습니다.')        
         else:
-            item = self.inventory[item_name]
-            item.quantity += num
-        print(f'[편의점] {item_name}이 {num}개 입고되었습니다.\n')
+            raise ValueError('해당 매장은 존재하지 않습니다.')
+
+    # temp =================================
+
+
+
 
 
 
@@ -356,17 +379,9 @@ class Tax_administration():
                     print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
                     return tax
         return calc_progressive_tax
-        
-    # def calc_tax(self, tax_payer): 
-    #     for tax_bracket in self.__tax_rates:
-    #         if tax_payer.wage > tax_bracket[0]:
-    #             tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
-    #             tax_payer.total_work_days = 0
-    #             print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
-    #             return tax
-    
-    def collect_tax(self, tax_payer):
 
+
+    def collect_tax(self, tax_payer):
         calc_tax_method = self.calc_tax()
         tax = calc_tax_method(tax_payer)
         if tax_payer.name in self.__defaulters.keys():
@@ -383,9 +398,33 @@ class Tax_administration():
 
 
 
-admin = Tax_administration()
-person1 = Customer('존', 200, 1000)
-print(person1.name, person1.money, person1.wage)
+# admin = Tax_administration()
+# person1 = Customer('존', 200, 1000)
+# print(person1.name, person1.money, person1.wage)
 
-person1.make_money(100)
-admin.collect_tax(person1)
+# person1.make_money(100)
+# admin.collect_tax(person1)
+
+
+# # "편의점에서 고객이 물건을 산다" 예시
+
+# # 1. 편의점을 연다.
+# cvs1 = ConvenientStore('imun')
+
+# # 2. (고객이 될)사람들을 만든다.
+# person1 = Person('존', 200, 300)
+# person2 = Person('수잔', 300, 1000)
+
+# # 3. 편의점에 재고를 채운다.         # 예시)
+# cvs1.add_item('sprite', 50)    # 100원
+# cvs1.add_item('coke', 20)      # 200원
+# cvs1.add_item('ramen', 100)    # 1000원
+
+# # 4. 현재 재고를 확인한다.
+# cvs1.print_inventory()
+
+# Customer.customer_num
+# # person1.membership_num
+
+
+# # cvs1.sell_item(person1, 'ramen', 20)
