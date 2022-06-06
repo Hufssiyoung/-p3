@@ -12,6 +12,8 @@ Members : 남소연, 윤준서, 전시영, 정가은, 송채영
 from abc import *
 from dataclasses import dataclass
 
+from regex import E
+
 class PersonInitException(Exception):
     def __init__(self):
         super().__init__("[usage] Person(이름->문자열,현재 가진 돈->0이상의 정수, 임금->1이상의 정수)")
@@ -222,10 +224,6 @@ class ConvenientStore(AbstractConvenientStore):
     def revenue(self):
         return self.__revenue
 
-    # @classmethod
-    # def get_convenient_stores(cls): #아래의 property로 바꾸는 게 좋을 듯
-    #     return cls.__convenient_stores
-
     @classmethod
     @property
     def convenient_stores(cls):
@@ -309,12 +307,6 @@ class ConvenientStore(AbstractConvenientStore):
             item.discount_rate = input_discount_rate
             item.price *= input_discount_rate
 
-
-
-
-
-    # temp =================================
-
     def delivery_service(self, person, **kargs): #**kargs: 송장에 들어갈 기본 정보
         print("======== 편의점 배송지 목록 ==========")
         print(self.convenient_stores)
@@ -336,12 +328,7 @@ class ConvenientStore(AbstractConvenientStore):
             else: 
                 print('[편의점] 잔액이 부족해 택배를 보내지 못했습니다.')        
         else:
-            raise ValueError('해당 매장은 존재하지 않습니다.')
-
-    # temp =================================
-
-
-
+            print('[편의점] 해당 매장은 존재하지 않습니다. 택배를 보내지 못했습니다. ')
 
 
 
