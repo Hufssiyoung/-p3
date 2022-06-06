@@ -1,6 +1,13 @@
+""""
+Content : 새로운 기능 추가 - 연말정산, 기프티콘 결제, 편의점 택배
+
+Date : 2022.06.08
+Team : H
+Members : 남소연, 윤준서, 전시영, 정가은, 송채영
+"""
+
 from abc import *
 from dataclasses import dataclass
-import sys
 
 class PersonInitException(Exception):
     def __init__(self):
@@ -237,11 +244,14 @@ class ConvenientStore(AbstractConvenientStore):
     def add_item(self, item_name, num):
         if item_name not in self.__inventory:
             while True:
-                price = input(f'>>{item_name}의 가격을 입력하세요: ')
-                if price.isdigit():
+                try:
+                    price = input(f'>>{item_name}의 가격을 입력하세요: ')
+                    if not price.isdigit():
+                        raise ValueError()
+                except ValueError:
+                    print('가격을 잘못 입력했습니다. 다시 입력하세요.')
+                else:
                     break
-                print('가격을 잘못 입력했습니다. 다시 입력하세요.')
-
             price = int(price)
             self.__inventory[item_name] = Item(item_name, price, price, num, 0)
         else:
@@ -323,7 +333,7 @@ class Tax_administration():
             if tax_payer.wage > tax_bracket[0]:
                 tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
                 tax_payer.total_work_days = 0
-                print(f'{tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
+                print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
                 return tax
     
     def collect_tax(self, tax_payer):
