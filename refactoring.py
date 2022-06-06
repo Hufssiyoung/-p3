@@ -20,8 +20,6 @@ class Person():
         self.__name = input_name
         self.__money = input_money
         self.__wage = input_wage
-
-        ##temp
         self.__total_work_days = 0
 
     # getter & setter =====================
@@ -33,12 +31,14 @@ class Person():
     def money(self):
         return self.__money
 
+    @money.setter
+    def money(self, input_money):
+        self.__money = input_money
+
     @property
     def wage(self):
         return self.__wage
 
-
-     ##temp
     @property
     def total_work_days(self):
         return self.__total_work_days
@@ -51,11 +51,11 @@ class Person():
 
     def make_money(self, work_days):
         if work_days > 0:
-            income = work_days * self.wage
-            print(f'[사람] {self.name}은 {self.wage}시간을 일해서 {income}원을 벌었습니다.')
-            self.money = self.money + income
-            print(f'[사람] 현재 {self.money}원을 갖고 있습니다.\n')
-            self.total_work_days += work_days
+            income = work_days * self.__wage
+            print(f'[사람] {self.__name}은 {work_days}일을 일해서 {income}원을 벌었습니다.')
+            self.__money += income
+            print(f'[사람] 현재 {self.__money}원을 갖고 있습니다.\n')
+            self.__total_work_days += work_days
         else:
             print('[사람] 일한 시간은 0시간 보다 커야 합니다.\n')
 
@@ -132,7 +132,7 @@ class Customer(Person):
 
         return True
 
-    def buy_item(self, item: Item, num):
+    def buy_item(self, item, num):
         if self.purchase(item.price * num):
             self.add_item_to_itemlist(item, num)
             print(f'[사람] {self.__name}은 {item.__name}을(를) {num}개 구매하였습니다.')
@@ -195,7 +195,7 @@ class ConvenientStore(AbstractConvenientStore):
         self.__inventory = {}
         self.__revenue = 0
         ConvenientStore.__convenient_stores.append(self.__branch_name)
-        # print(f'[편의점] 새로운 매장 {self.__branch_name}점이 생겼습니다.\n')
+        print(f'[편의점] 새로운 매장 {self.__branch_name}점이 생겼습니다.\n')
 
     # getter & setter ----------------------
     @property
@@ -300,7 +300,8 @@ class Tax_administration():
 
     def __init__(self):
         self.__collected_money = 0
-        self.__tax_rates = [[0, 0.00], [1200, 0.06], [4600, 0.15], [8800, 0.24]]  #[소득 구간을 나누는 소득액, 해당 소득 구간의 세금 비율]
+        self.__tax_rates = [[8800, 0.24], [4600, 0.15],[1200, 0.06], [0, 0.01]]  #[소득 구간을 나누는 소득액, 해당 소득 구간의 세금 비율]
+        # self.__tax_rates = [[0, 0.00], [1200, 0.06], [4600, 0.15], [8800, 0.24]]  #[소득 구간을 나누는 소득액, 해당 소득 구간의 세금 비율]
         self.__defaulters = {}
 
     # getter & setter =====================
@@ -321,14 +322,13 @@ class Tax_administration():
     def calc_tax(self, tax_payer): 
         for tax_bracket in self.__tax_rates:
             if tax_payer.wage > tax_bracket[0]:
-                tax = (tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1]
+                tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
                 tax_payer.total_work_days = 0
-                print(f'{tax_payer.name}님 {result}만큼 세금을 납부하셔야 합니다')
+                print(f'{tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
                 return tax
-
     
     def collect_tax(self, tax_payer):
-        tax = calc_tax(tax_payer)
+        tax = self.calc_tax(tax_payer)
         if tax_payer.name in self.__defaulters.keys():
             tax += self.__defaulters[tax_payer.name]
             del(self.__defaulters[tax_payer.name])
@@ -340,3 +340,12 @@ class Tax_administration():
         else:
             self.__defaulters[tax_payer.name] = tax
             print('[국세청] 가지고 있는 금액이 부족합니다.')
+
+
+
+# admin = Tax_administration()
+# person1 = Customer('존', 200, 1000)
+# print(person1.name, person1.money, person1.wage)
+
+# person1.make_money(100)
+# admin.collect_tax(person1)
