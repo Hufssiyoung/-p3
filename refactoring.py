@@ -45,9 +45,13 @@ class Person():
         # else:
         #     print('[사람] 일한 시간은 0시간 보다 커야 합니다.\n')
 
-
-
-
+    def change_wage(self, input_wage):
+        if self.__wage > 0:
+            print(f'[사람] {self.__name}의 임금이 시간 당 \
+				{self.__wage}원에서 {input_wage}원으로 바뀌었습니다.\n')
+            self.__wage = input_wage
+        else:
+            print('[사람] 변경하고자 하는 임금은 0보다 큰 정수여야 합니다.\n')
 
 
 class Customer(Person):
@@ -76,3 +80,9 @@ class Customer(Person):
     def membership_num(self):
         return self.__membership_num
     
+    @classmethod
+    def customer_num(cls):
+        return cls.__customer_num
+    # ======================================
+
+
