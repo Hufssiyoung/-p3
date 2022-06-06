@@ -317,11 +317,11 @@ class ConvenientStore(AbstractConvenientStore):
 
     def delivery_service(self, person, **kargs): #**kargs: 송장에 들어갈 기본 정보
         print("======== 편의점 배송지 목록 ==========")
-        print(self.convenient_stores())
+        print(self.convenient_stores)
         print("=================================")
         destination = input('물건을 보낼 편의점을 입력하세요>> ')
 
-        if destination in self.convenient_stores():
+        if destination in self.convenient_stores:
             print(f'{destination} 점포로 택배를 보냅니다.')
             addressee = kargs['addressee'] 
             print(f'발송인 : {person.name}, 수령인 : {addressee}')
