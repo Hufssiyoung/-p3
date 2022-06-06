@@ -21,6 +21,9 @@ class Person():
         self.__money = input_money
         self.__wage = input_wage
 
+        ##temp
+        self.__total_work_days = 0
+
     # getter & setter =====================
     @property
     def name(self):
@@ -34,19 +37,28 @@ class Person():
     def wage(self):
         return self.__wage
 
+
+     ##temp
+    @property
+    def total_work_days(self):
+        return self.__total_work_days
+
+    @total_work_days.setter
+    def total_work_days(self, new_days):
+        self.__total_work_days = new_days
+
     # ======================================
 
-    def make_money(self, work_days): #work_hours
-    # 새로운 버전 들어갈 곳
-        pass
-    # 구버전 --> 새버전 넣고 구버전은 지우셔도 됩니댜
-        # if work_hours > 0:
-        #     income = work_hours * self.wage
-        #     print(f'[사람] {self.name}은 {self.wage}시간을 일해서 {income}원을 벌었습니다.')
-        #     self.money = self.money + income
-        #     print(f'[사람] 현재 {self.money}원을 갖고 있습니다.\n')
-        # else:
-        #     print('[사람] 일한 시간은 0시간 보다 커야 합니다.\n')
+    def make_money(self, work_days):
+        if work_days > 0:
+            income = work_days * self.wage
+            print(f'[사람] {self.name}은 {self.wage}시간을 일해서 {income}원을 벌었습니다.')
+            self.money = self.money + income
+            print(f'[사람] 현재 {self.money}원을 갖고 있습니다.\n')
+            self.total_work_days += work_days
+        else:
+            print('[사람] 일한 시간은 0시간 보다 커야 합니다.\n')
+
 
     def change_wage(self, input_wage):
         if self.__wage > 0:
@@ -147,7 +159,7 @@ class Item:
 
 class AbstractConvenientStore(metaclass=ABCMeta):
     """편의점 추상 클래스."""
-    __convenient_stores = '편의점 지점들의 목록'
+    __convenient_stores = '현재까지 개업한 편의점 지점들의 목록'
 
     def __init__(self, input_branch_name):
         branch_name = '지점명'
@@ -155,17 +167,25 @@ class AbstractConvenientStore(metaclass=ABCMeta):
         customers = '고객 명단'
         revenue = '수입'
 
-# 편의점
-# add_customer
-# add_item
-# sell_item
-# change_discount_rate
+    @abstractmethod
+    def add_customer(self):
+        print('고객 명단에 고객을 추가하는 메서드입니다.')
+        
+    @abstractmethod
+    def add_item(self):
+        print('재고를 재고 목록에 추가하는 메서드입니다.')
+
+    @abstractmethod
+    def sell_item(self):
+        print('물건을 고객에게 파는 메서드입니다.')
+        
+    @abstractmethod
+    def change_discount_rate(self):
+        print('할인율을 변경하는 메서드입니다.')
 
 
 
-
-
-class ConvenientStore():
+class ConvenientStore(AbstractConvenientStore):
     """편의점 클래스."""
     __convenient_stores = []
 
@@ -271,3 +291,52 @@ class ConvenientStore():
         if (item := self.get_item_info(item_name)):
             item.discount_rate = input_discount_rate
             item.price *= input_discount_rate
+
+
+
+# Tax_administration --------------------------------------------------------- 
+
+class Tax_administration():
+
+    def __init__(self):
+        self.__collected_money = 0
+        self.__tax_rates = [[0, 0.00], [1200, 0.06], [4600, 0.15], [8800, 0.24]]  #[소득 구간을 나누는 소득액, 해당 소득 구간의 세금 비율]
+        self.__defaulters = {}
+
+    # getter & setter =====================
+    @property
+    def collected_money(self):
+        return self.__collected_money
+
+    @property
+    def tax_rates(self):
+        return self.__tax_rates
+
+    @property
+    def defaulters(self):
+        return self.__defaulters
+
+    # ======================================
+
+    def calc_tax(self, tax_payer): 
+        for tax_bracket in self.__tax_rates:
+            if tax_payer.wage > tax_bracket[0]:
+                tax = (tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1]
+                tax_payer.total_work_days = 0
+                print(f'{tax_payer.name}님 {result}만큼 세금을 납부하셔야 합니다')
+                return tax
+
+    
+    def collect_tax(self, tax_payer):
+        tax = calc_tax(tax_payer)
+        if tax_payer.name in self.__defaulters.keys():
+            tax += self.__defaulters[tax_payer.name]
+            del(self.__defaulters[tax_payer.name])
+
+        if tax_payer.money > tax:
+            tax_payer.money -= tax
+            print(f'[국세청] {tax_payer.name}님 세금 {tax}원이 납부되었습니다.')
+            self.__collected_money += tax
+        else:
+            self.__defaulters[tax_payer.name] = tax
+            print('[국세청] 가지고 있는 금액이 부족합니다.')
