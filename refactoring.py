@@ -19,10 +19,11 @@ class PersonInitException(Exception):
 class Person():
 
     def __init__(self, input_name, input_money=0, input_wage=10):
-        # if (input_money < 0) or (input_wage <= 0):
-        #     raise PersonInitException
-        # try: 
-        #예외 처리로 만들기
+        try:
+            if (input_money < 0) or (input_wage <= 0):
+                raise PersonInitException
+        except PersonInitException as e1:
+            print(e1) 
  
         self.__name = input_name
         self.__money = input_money
