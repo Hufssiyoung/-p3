@@ -13,7 +13,6 @@ import sys
 class Person():
 
     def __init__(self, input_name, input_money=0, input_wage=10):
-
         self.__name = input_name
         self.__money = input_money
         self.__wage = input_wage
@@ -36,7 +35,7 @@ class Person():
         self.__wage = input_wage
 
     # ======================================
-    def make_money(self, work_hours):
+    def make_money(self, work_days): #work_hours
     # 새로운 버전 들어갈 곳
         pass
     # 구버전 --> 새버전 넣고 구버전은 지우셔도 됩니댜
@@ -60,18 +59,16 @@ class Person():
 class Customer(Person):
     __customer_num = 0
 
-    def __init__(self, input_name, input_money, input_wage):
-
-        if (input_money < 0) or (input_wage <= 0):
-            super().__init__(input_name, input_money, input_wage)
-            self.__point = 0
-            self.__item_list = {}
-            Customer.__customer_num += 1
-            self.__membership_num = Customer.__customer_num
+    def __init__(self, input_name, input_money=0, input_wage=100):
+        super().__init__(input_name, input_money, input_wage)
+        self.__point = 0
+        self.__item_list = {}
+        Customer.__customer_num += 1
+        self.__membership_num = Customer.__customer_num
 
     # getter & setter =====================
     @property
-    def __point(self):
+    def point(self):
         return self.__point
 
     @property
