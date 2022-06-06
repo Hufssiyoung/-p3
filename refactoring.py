@@ -79,9 +79,6 @@ class Customer(Person):
     def membership_num(self):
         return self.__membership_num
 
-    #setter
-
-
     # ======================================
 
     @classmethod
@@ -90,11 +87,11 @@ class Customer(Person):
 
 
     def add_item_to_itemlist(self,item, num):
-        self.item_list.setdefault(item.name, 0)
-        self.item_list[item.name] += num
+        self.__item_list.setdefault(item.name, 0)
+        self.__item_list[item.name] += num
 
     def purchase(self, cost):
-        if (self.point + self.money) < cost:
+        if (self.__point + self.__money) < cost:
             return False
 
         while True:
@@ -108,24 +105,24 @@ class Customer(Person):
             print('[사람] 메뉴를 잘못 입력했습니다. 다시 입력하세요.')
 
         if payment in ['포인트', '1']:
-            self.point -= cost
-            if self.point > 0:
+            self.__point -= cost
+            if self.__point > 0:
                 return True
-            cost = -self.point
-            self.point = 0
+            cost = -self.__point
+            self.__point = 0
 
-        self.money -= cost
+        self.__money -= cost
         point_rate = 0.1
-        self.point += int(cost * point_rate) #10퍼센트를 포인트로 적립(소수점은 내림)
+        self.__point += int(cost * point_rate) #10퍼센트를 포인트로 적립(소수점은 내림)
 
         return True
 
     def buy_item(self, item: Item, num):
         if self.purchase(item.price * num):
             self.add_item_to_itemlist(item, num)
-            print(f'[사람] {self.name}은 {item.name}을(를) {num}개 구매하였습니다.')
+            print(f'[사람] {self.__name}은 {item.__name}을(를) {num}개 구매하였습니다.')
             return True
-        print(f'[사람] {self.name}은 잔액이 부족합니다.\n')
+        print(f'[사람] {self.__name}은 잔액이 부족합니다.\n')
         return False
 
 
@@ -143,7 +140,7 @@ class Item:
 
 # ConvenientStore --------------------------------------------------------- 
 
-class ConvenientStore(AbstractConvenientStore):
+class ConvenientStore():
     """편의점 클래스."""
     __convenient_stores = []
 
@@ -162,15 +159,6 @@ class ConvenientStore(AbstractConvenientStore):
         return self.__branch_name
 
     @property
-    def customers(self):
-        return self.__customers
-
-    @property
-    def inventory(self):
-        return self.__inventory
-
-
-    @property
     def revenue(self):
         return self.__revenue
 
@@ -182,25 +170,25 @@ class ConvenientStore(AbstractConvenientStore):
 
 
     def add_customer(self, customer): #add_new_customer
-        self.customers[customer.membership_num] = customer
+        self.__customers[customer.membership_num] = customer
 
     def print_customers(self):
         print('======== 고객 목록 ========')
         print('회원번호\t|\t 성함')
         print('-------------------------')
-        for membership_num, customer in self.customers.items():
+        for membership_num, customer in self.__customers.items():
             print(f"{membership_num}\t:\t{customer.name} 님")
         print('=========================\n')
 
     def search_customer(self, membership_num):
-        if membership_num in self.customers:
-            print(self.customers[membership_num])
+        if membership_num in self.__customers:
+            print(self.__customers[membership_num])
         else:
             print('[편의점] 존재하지 않는 회원입니다.\n')
 
 
     def add_item(self, item_name, num):
-        if item_name not in self.inventory:
+        if item_name not in self.__inventory:
             while True:
                 price = input(f'>>{item_name}의 가격을 입력하세요: ')
                 if price.isdigit():
@@ -208,26 +196,26 @@ class ConvenientStore(AbstractConvenientStore):
                 print('가격을 잘못 입력했습니다. 다시 입력하세요.')
 
             price = int(price)
-            self.inventory[item_name] = Item(item_name, price, price, num, 0)
+            self.__inventory[item_name] = Item(item_name, price, price, num, 0)
         else:
-            item = self.inventory[item_name]
+            item = self.__inventory[item_name]
             item.quantity += num
         print(f'[편의점] {item_name}이 {num}개 입고되었습니다.\n')
 
     def remove_item(self, item_name, num):
-        self.inventory[item_name].quantity -= num
+        self.__inventory[item_name].quantity -= num
 
 
     def print_inventory(self):
         print('======== 재고 현황 ========')
-        for name in self.inventory:
+        for name in self.__inventory:
             print(f"{name}\t:\t{self.get_item_info(name).quantity}개")
         print('=========================\n')
 
 
     def get_item_info(self, item_name):
-        if item_name in self.inventory:
-            return self.inventory[item_name]
+        if item_name in self.__inventory:
+            return self.__inventory[item_name]
         return None
 
 
@@ -238,18 +226,18 @@ class ConvenientStore(AbstractConvenientStore):
             print('[편의점] 재고가 부족합니다.\n')
             return
 
-        if customer.membership_num not in self.customers:
+        if customer.membership_num not in self.__customers:
             self.add_customer(customer)
 
         if customer.buy_item(item, num):
             self.remove_item(item.name, num)
-            self.revenue += item.price * num
+            self.__revenue += item.price * num
             print(f'[편의점] {item.name}을 {num}개 판매했습니다.\n')
         return
 
 
     def print_revenue(self):
-        print(f'[편의점] 현재까지의 수입은 {self.revenue}입니다.\n')
+        print(f'[편의점] 현재까지의 수입은 {self.__revenue}입니다.\n')
 
 
     def change_discount_rate(self, item_name, input_discount_rate):
