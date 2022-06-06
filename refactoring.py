@@ -19,7 +19,7 @@ class PersonInitException(Exception):
 
 # Person ---------------------------------------------------------------- 
 
-class Person():
+class Person(metaclass=ABCMeta):
 
     def __init__(self, input_name, input_money=0, input_wage=10):
         try:
@@ -120,7 +120,7 @@ class Customer(Person):
         self.__item_list[item.name] += num
 
     def purchase(self, cost):
-        if (self.__point + self.__money) < cost:
+        if (self.__point + self.money) < cost:
             return False
 
         while True:
@@ -140,7 +140,7 @@ class Customer(Person):
             cost = -self.__point
             self.__point = 0
 
-        self.__money -= cost
+        self.money -= cost
         point_rate = 0.1
         self.__point += int(cost * point_rate) #10퍼센트를 포인트로 적립(소수점은 내림)
 
@@ -149,9 +149,9 @@ class Customer(Person):
     def buy_item(self, item, num):
         if self.purchase(item.price * num):
             self.add_item_to_itemlist(item, num)
-            print(f'[고객] {self.__name}은 {item.__name}을(를) {num}개 구매하였습니다.')
+            print(f'[고객] {self.name}은 {item.name}을(를) {num}개 구매하였습니다.')
             return True
-        print(f'[고객] {self.__name}은 잔액이 부족합니다.\n')
+        print(f'[고객] {self.name}은 잔액이 부족합니다.\n')
         return False
 
 
