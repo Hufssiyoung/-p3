@@ -137,6 +137,12 @@ class AbstractConvenientStore(metaclass=ABCMeta):
 
 
 
+class Person():
+
+    def __init__(self, input_name, input_money=0, input_wage=10):
+        self.__name = input_name
+        self.__money = input_money
+        self.__wage = input_wage
 
 
 
@@ -147,16 +153,16 @@ class AbstractConvenientStore(metaclass=ABCMeta):
 
 
 
-
-
-
-class Person(AbstractPerson):
+class Customer(Person):
     """사람 클래스."""
-    __person_num = 0
+    __customer_num = 0
 
     def __init__(self, input_name, input_money, input_wage):
 
         if (input_money < 0) or (input_wage <= 0):
+            super().__init__(input_name, input_money, input_wage)
+
+
             print('[error] usage: Person(이름->문자열, \
 										현재 가진 돈->0이상의 정수, \
 										임금->1이상의 정수)', file=sys.stderr)
@@ -167,12 +173,12 @@ class Person(AbstractPerson):
         self.__money = input_money
         self.__item_list = {}
         self.__wage = input_wage
-        Person.__person_num += 1
-        self.__membership_num = Person.__person_num
+        Customer.__customer_num += 1
+        self.__membership_num = Customer.__customer_num
 
     @classmethod
-    def person_num(cls):
-        return cls.__person_num
+    def customer_num(cls):
+        return cls.__customer_num
 
 
     @property
