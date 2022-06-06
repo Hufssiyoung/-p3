@@ -1,5 +1,8 @@
 """"
-Content : 새로운 기능 추가 - 연말정산, 기프티콘 결제, 편의점 택배
+Content : 새로운 기능 추가 및 수정
+
+ - 연말정산, 기프티콘 결제, 편의점 택배
+ - 예외처리 및 사용자 정의 예외 발생
 
 Date : 2022.06.08
 Team : H
@@ -125,7 +128,7 @@ class Customer(Person):
 >> 원하는 결제 수단을 입력하세요: ''')
             if payment in ['포인트', '현금', '1', '2']:
                 break
-            print('[사람] 메뉴를 잘못 입력했습니다. 다시 입력하세요.')
+            print('[고객] 메뉴를 잘못 입력했습니다. 다시 입력하세요.')
 
         if payment in ['포인트', '1']:
             self.__point -= cost
@@ -143,9 +146,9 @@ class Customer(Person):
     def buy_item(self, item, num):
         if self.purchase(item.price * num):
             self.add_item_to_itemlist(item, num)
-            print(f'[사람] {self.__name}은 {item.__name}을(를) {num}개 구매하였습니다.')
+            print(f'[고객] {self.__name}은 {item.__name}을(를) {num}개 구매하였습니다.')
             return True
-        print(f'[사람] {self.__name}은 잔액이 부족합니다.\n')
+        print(f'[고객] {self.__name}은 잔액이 부족합니다.\n')
         return False
 
 
@@ -270,12 +273,10 @@ class ConvenientStore(AbstractConvenientStore):
             print(f"{name}\t:\t{self.get_item_info(name).quantity}개")
         print('=========================\n')
 
-
     def get_item_info(self, item_name):
         if item_name in self.__inventory:
             return self.__inventory[item_name]
         return None
-
 
     def sell_item(self, customer, item_name, num):
 
@@ -304,6 +305,23 @@ class ConvenientStore(AbstractConvenientStore):
             item.price *= input_discount_rate
 
 
+def add_item(self, item_name, num):
+        if item_name not in self.inventory:
+            while True:
+                price = input(f'>>{item_name}의 가격을 입력하세요: ')
+                if not price.isdigit():
+                    raise ValueError('가격을 잘 못 입력했습니다. 다시 입력하세요.')
+                else:
+                    break
+            price = int(price)
+            self.inventory[item_name] = Item(item_name, price, price, num, 0)
+        else:
+            item = self.inventory[item_name]
+            item.quantity += num
+        print(f'[편의점] {item_name}이 {num}개 입고되었습니다.\n')
+
+
+
 
 # Tax_administration --------------------------------------------------------- 
 
@@ -329,16 +347,28 @@ class Tax_administration():
 
     # ======================================
 
-    def calc_tax(self, tax_payer): 
-        for tax_bracket in self.__tax_rates:
-            if tax_payer.wage > tax_bracket[0]:
-                tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
-                tax_payer.total_work_days = 0
-                print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
-                return tax
+    def calc_tax(self): 
+        def calc_progressive_tax(tax_payer):
+            for tax_bracket in self.__tax_rates:
+                if tax_payer.wage > tax_bracket[0]:
+                    tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
+                    tax_payer.total_work_days = 0
+                    print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
+                    return tax
+        return calc_progressive_tax
+        
+    # def calc_tax(self, tax_payer): 
+    #     for tax_bracket in self.__tax_rates:
+    #         if tax_payer.wage > tax_bracket[0]:
+    #             tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
+    #             tax_payer.total_work_days = 0
+    #             print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
+    #             return tax
     
     def collect_tax(self, tax_payer):
-        tax = self.calc_tax(tax_payer)
+
+        calc_tax_method = self.calc_tax()
+        tax = calc_tax_method(tax_payer)
         if tax_payer.name in self.__defaulters.keys():
             tax += self.__defaulters[tax_payer.name]
             del(self.__defaulters[tax_payer.name])
@@ -353,9 +383,9 @@ class Tax_administration():
 
 
 
-# admin = Tax_administration()
-# person1 = Customer('존', 200, 1000)
-# print(person1.name, person1.money, person1.wage)
+admin = Tax_administration()
+person1 = Customer('존', 200, 1000)
+print(person1.name, person1.money, person1.wage)
 
-# person1.make_money(100)
-# admin.collect_tax(person1)
+person1.make_money(100)
+admin.collect_tax(person1)
