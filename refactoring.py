@@ -1,5 +1,5 @@
-""""
-Content : 새로운 기능 추가 및 수정
+"""
+Content : 새로운 기능 추가 및 수정.
 
  - 연말정산, 편의점 택배
  - 예외처리 및 사용자 정의 예외 발생
@@ -160,6 +160,7 @@ class Customer(Person):
 @dataclass
 class Item:
     """물건 클래스."""
+
     name: str
     full_price: int    #정가
     price: int         #판매가(할인률 적용된 가격)
@@ -172,6 +173,7 @@ class Item:
 
 class AbstractConvenientStore(metaclass=ABCMeta):
     """편의점 추상 클래스."""
+
     __convenient_stores = '현재까지 개업한 편의점 지점들의 목록'
 
     def __init__(self):
@@ -204,6 +206,7 @@ class AbstractConvenientStore(metaclass=ABCMeta):
 
 class ConvenientStore(AbstractConvenientStore):
     """편의점 클래스."""
+
     __convenient_stores = []
 
     def __init__(self, input_branch_name):
