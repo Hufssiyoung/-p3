@@ -29,12 +29,9 @@ class Person():
     @property
     def wage(self):
         return self.__wage
-    
-    @wage.setter
-    def wage(self, input_wage):
-        self.__wage = input_wage
 
     # ======================================
+    
     def make_money(self, work_days): #work_hours
     # 새로운 버전 들어갈 곳
         pass
@@ -89,7 +86,7 @@ class Customer(Person):
         return cls.__customer_num
 
 
-    def add_item(self,item, num):
+    def add_item_to_itemlist(self,item, num):
         self.item_list.setdefault(item.name, 0)
         self.item_list[item.name] += num
 
@@ -121,7 +118,7 @@ class Customer(Person):
 
     def buy_item(self, item, num):
         if self.purchase(item.price * num):
-            self.add_item(item, num)
+            self.add_item_to_itemlist(item, num)
             print(f'[사람] {self.name}은 {item.name}을(를) {num}개 구매하였습니다.')
             return True
         print(f'[사람] {self.name}은 잔액이 부족합니다.\n')
