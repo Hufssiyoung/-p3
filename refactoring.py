@@ -12,14 +12,13 @@ Members : 남소연, 윤준서, 전시영, 정가은, 송채영
 from abc import *
 from dataclasses import dataclass
 
-from regex import E
-
 class PersonInitException(Exception):
     def __init__(self):
-        super().__init__("[usage] Person(이름->문자열,현재 가진 돈->0이상의 정수, 임금->1이상의 정수)")
+        super().__init__("[usage] \
+Person(이름->문자열,현재 가진 돈->0이상의 정수, 임금->1이상의 정수)")
 
 
-# Person ---------------------------------------------------------------- 
+# Person ----------------------------------------------------------------
 
 class Person(metaclass=ABCMeta):
 
@@ -27,9 +26,9 @@ class Person(metaclass=ABCMeta):
         try:
             if (input_money < 0) or (input_wage <= 0):
                 raise PersonInitException
-        except PersonInitException as e1:
-            print(e1) 
- 
+        except PersonInitException as error:
+            print(error)
+
         self.__name = input_name
         self.__money = input_money
         self.__wage = input_wage
@@ -75,7 +74,8 @@ class Person(metaclass=ABCMeta):
 
     def change_wage(self, input_wage):
         if self.__wage > 0:
-            print(f'[사람] {self.__name}의 임금이 {self.__wage}원에서 {input_wage}원으로 바뀌었습니다.\n')
+            print(f'[사람] {self.__name}의 임금이 {self.__wage}원에서 \
+{input_wage}원으로 바뀌었습니다.\n')
             self.__wage = input_wage
         else:
             print('[사람] 변경하고자 하는 임금은 0보다 큰 정수여야 합니다.\n')
@@ -107,13 +107,10 @@ class Customer(Person):
     def membership_num(self):
         return self.__membership_num
 
-    @property
-    def membership_num(cls):
-        return cls.__customer_num
     # ======================================
 
     @classmethod
-    def customer_num(cls):
+    def get_customer_num(cls):
         return cls.__customer_num
 
 
@@ -158,7 +155,7 @@ class Customer(Person):
 
 
 
-# Item -------------------------------------------------------------------- 
+# Item --------------------------------------------------------------------
 
 @dataclass
 class Item:
@@ -171,37 +168,39 @@ class Item:
 
 
 
-# ConvenientStore --------------------------------------------------------- 
+# ConvenientStore ---------------------------------------------------------
 
 class AbstractConvenientStore(metaclass=ABCMeta):
     """편의점 추상 클래스."""
     __convenient_stores = '현재까지 개업한 편의점 지점들의 목록'
 
-    def __init__(self, input_branch_name):
-        branch_name = '지점명'
-        inventory = '재고 목록'
-        customers = '고객 명단'
-        revenue = '수입'
+    def __init__(self):
+        self.branch_name = '지점명'
+        self.inventory = '재고 목록'
+        self.customers = '고객 명단'
+        self.revenue = '수입'
 
     @abstractmethod
-    def add_customer(self):
+    def add_customer(self, customer):
         print('고객 명단에 고객을 추가하는 메서드입니다.')
-        
+
     @abstractmethod
-    def add_item(self):
+    def add_item(self, item_name, num):
         print('재고를 재고 목록에 추가하는 메서드입니다.')
 
     @abstractmethod
-    def sell_item(self):
+    def sell_item(self, customer, item_name, num):
         print('물건을 고객에게 파는 메서드입니다.')
-        
+
     @abstractmethod
-    def change_discount_rate(self):
+    def change_discount_rate(self, item_name, input_discount_rate):
         print('할인율을 변경하는 메서드입니다.')
 
     @abstractmethod
-    def change_discount_rate(self):
-        print('할인율을 변경하는 메서드입니다.')
+    def delivery_service(self, person, **kargs):
+        print('편의점 간 택배 서비스를 구현한 메서드입니다.')
+
+
 
 class ConvenientStore(AbstractConvenientStore):
     """편의점 클래스."""
@@ -315,8 +314,8 @@ class ConvenientStore(AbstractConvenientStore):
 
         if destination in self.convenient_stores:
             print(f'{destination} 점포로 택배를 보냅니다.')
-            addressee = kargs['addressee'] 
-            print(f'발송인 : {person.name}, 수령인 : {addressee}')
+            addressee = kargs['addressee']
+            print(f'발송인: {person.name}, 수령인: {addressee}')
 
             if kargs['weight'] <= 500:
                 delivery_cost = 3000
@@ -325,21 +324,22 @@ class ConvenientStore(AbstractConvenientStore):
 
             if person.purchase(delivery_cost):
                 print(f'배송 비용은 총 {delivery_cost}원 입니다.')
-            else: 
-                print('[편의점] 잔액이 부족해 택배를 보내지 못했습니다.')        
+            else:
+                print('[편의점] 잔액이 부족해 택배를 보내지 못했습니다.')
         else:
             print('[편의점] 해당 매장은 존재하지 않습니다. 택배를 보내지 못했습니다. ')
 
 
 
 
-# Tax_administration --------------------------------------------------------- 
+# TaxAdministration ---------------------------------------------------------
 
-class Tax_administration():
+class TaxAdministration():
 
     def __init__(self):
         self.__collected_money = 0
-        self.__tax_rates = [[8800, 0.24], [4600, 0.15],[1200, 0.06], [0, 0.01]]  #[소득 구간을 기준액, 해당 소득 구간의 세율]
+        self.__tax_rates = [[8800, 0.24], [4600, 0.15],[1200, 0.06], [0, 0.01]]
+                            #[[소득 구간을 기준액, 해당 소득 구간의 세율], ...]
         self.__defaulters = {}
 
     # getter & setter =====================
@@ -357,14 +357,16 @@ class Tax_administration():
 
     # ======================================
 
-    def calc_tax(self): 
+    def calc_tax(self):
         def calc_progressive_tax(tax_payer):
             for tax_bracket in self.__tax_rates:
                 if tax_payer.wage > tax_bracket[0]:
-                    tax = int((tax_payer.wage * tax_payer.total_work_days) * tax_bracket[1])
+                    tax = int((tax_payer.wage * tax_payer.total_work_days)\
+                                              * tax_bracket[1])
                     tax_payer.total_work_days = 0
                     print(f'[국세청] {tax_payer.name}님 {tax}만큼 세금을 납부하셔야 합니다')
-                    return tax
+                    break
+            return tax
         return calc_progressive_tax
 
 
@@ -373,7 +375,7 @@ class Tax_administration():
         tax = calc_tax_method(tax_payer)
         if tax_payer.name in self.__defaulters.keys():
             tax += self.__defaulters[tax_payer.name]
-            del(self.__defaulters[tax_payer.name])
+            del self.__defaulters[tax_payer.name]
 
         if tax_payer.money > tax:
             tax_payer.money -= tax
