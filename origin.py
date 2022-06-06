@@ -168,11 +168,11 @@ class Customer(Person):
 										임금->1이상의 정수)', file=sys.stderr)
             return
 
-        self.__name = input_name
+        # self.__name = input_name
         self.__point = 0
-        self.__money = input_money
+        # self.__money = input_money
         self.__item_list = {}
-        self.__wage = input_wage
+        # self.__wage = input_wage
         Customer.__customer_num += 1
         self.__membership_num = Customer.__customer_num
 
