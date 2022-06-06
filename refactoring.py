@@ -56,6 +56,9 @@ class Person():
             print('[사람] 변경하고자 하는 임금은 0보다 큰 정수여야 합니다.\n')
 
 
+
+# Customer ---------------------------------------------------------------
+
 class Customer(Person):
     __customer_num = 0
 
@@ -138,7 +141,29 @@ class Item:
     quantity: int
     discount_rate: float
 
+
+
 # ConvenientStore --------------------------------------------------------- 
+
+class AbstractConvenientStore(metaclass=ABCMeta):
+    """편의점 추상 클래스."""
+    __convenient_stores = '편의점 지점들의 목록'
+
+    def __init__(self, input_branch_name):
+        branch_name = '지점명'
+        inventory = '재고 목록'
+        customers = '고객 명단'
+        revenue = '수입'
+
+# 편의점
+# add_customer
+# add_item
+# sell_item
+# change_discount_rate
+
+
+
+
 
 class ConvenientStore():
     """편의점 클래스."""
@@ -152,8 +177,7 @@ class ConvenientStore():
         ConvenientStore.__convenient_stores.append(self.__branch_name)
         # print(f'[편의점] 새로운 매장 {self.__branch_name}점이 생겼습니다.\n')
 
-    # getter & setter =====================
-
+    # getter & setter ----------------------
     @property
     def branch_name(self):
         return self.__branch_name
@@ -162,12 +186,15 @@ class ConvenientStore():
     def revenue(self):
         return self.__revenue
 
-    # ======================================
-
     @classmethod
-    def get_convenient_stores(cls):
+    def get_convenient_stores(cls): #아래의 property로 바꾸는 게 좋을 듯
         return cls.__convenient_stores
 
+    # @classmethod
+    # @property
+    # def convenient_stores(cls): #property로 바꾸는 게 좋을 듯
+    #     return cls.__convenient_stores
+    # ======================================
 
     def add_customer(self, customer): #add_new_customer
         self.__customers[customer.membership_num] = customer
