@@ -1,7 +1,7 @@
 """"
 Content : 새로운 기능 추가 및 수정
 
- - 연말정산, 기프티콘 결제, 편의점 택배
+ - 연말정산, 편의점 택배
  - 예외처리 및 사용자 정의 예외 발생
 
 Date : 2022.06.08
@@ -395,36 +395,3 @@ class Tax_administration():
         else:
             self.__defaulters[tax_payer.name] = tax
             print('[국세청] 가지고 있는 금액이 부족합니다.')
-
-
-
-# admin = Tax_administration()
-# person1 = Customer('존', 200, 1000)
-# print(person1.name, person1.money, person1.wage)
-
-# person1.make_money(100)
-# admin.collect_tax(person1)
-
-
-# # "편의점에서 고객이 물건을 산다" 예시
-
-# # 1. 편의점을 연다.
-# cvs1 = ConvenientStore('imun')
-
-# # 2. (고객이 될)사람들을 만든다.
-# person1 = Person('존', 200, 300)
-# person2 = Person('수잔', 300, 1000)
-
-# # 3. 편의점에 재고를 채운다.         # 예시)
-# cvs1.add_item('sprite', 50)    # 100원
-# cvs1.add_item('coke', 20)      # 200원
-# cvs1.add_item('ramen', 100)    # 1000원
-
-# # 4. 현재 재고를 확인한다.
-# cvs1.print_inventory()
-
-# Customer.customer_num
-# # person1.membership_num
-
-
-# # cvs1.sell_item(person1, 'ramen', 20)
