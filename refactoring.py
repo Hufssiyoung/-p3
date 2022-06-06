@@ -7,6 +7,9 @@ import sys
 #         super().__init__("[error] usage: \
 # Person(이름->문자열,현재 가진 돈->0이상의 정수, 임금->1이상의 정수)")
 
+
+# Person ---------------------------------------------------------------- 
+
 class Person():
 
     def __init__(self, input_name, input_money=0, input_wage=10):
@@ -67,7 +70,6 @@ class Customer(Person):
             self.__membership_num = Customer.__customer_num
 
     # getter & setter =====================
-
     @property
     def __point(self):
         return self.__point
@@ -79,10 +81,66 @@ class Customer(Person):
     @property
     def membership_num(self):
         return self.__membership_num
-    
+
+    #setter
+
+
+    # ======================================
+
     @classmethod
     def customer_num(cls):
         return cls.__customer_num
-    # ======================================
 
 
+    def add_item(self,item, num):
+        self.item_list.setdefault(item.name, 0)
+        self.item_list[item.name] += num
+
+    def purchase(self, cost):
+        if (self.point + self.money) < cost:
+            return False
+
+        while True:
+            payment = input('''======== 결제 수단 선택 ========
+1) 포인트(포인트 차감 후, 부족한 차액은 현금으로 결제됩니다.)
+2) 현금
+===========================
+>> 원하는 결제 수단을 입력하세요: ''')
+            if payment in ['포인트', '현금', '1', '2']:
+                break
+            print('[사람] 메뉴를 잘못 입력했습니다. 다시 입력하세요.')
+
+        if payment in ['포인트', '1']:
+            self.point -= cost
+            if self.point > 0:
+                return True
+            cost = -self.point
+            self.point = 0
+
+        self.money -= cost
+        self.point += int(cost * 0.1) #10퍼센트를 포인트로 적립(소수점은 내림)
+
+        return True
+
+    def buy_item(self, item, num):
+        if self.purchase(item.price * num):
+            self.add_item(item, num)
+            print(f'[사람] {self.name}은 {item.name}을(를) {num}개 구매하였습니다.')
+            return True
+        print(f'[사람] {self.name}은 잔액이 부족합니다.\n')
+        return False
+
+
+
+# Item -------------------------------------------------------------------- 
+
+@dataclass
+class Item:
+    """물건 클래스."""
+    name: str
+    full_price: int    #정가
+    price: int         #판매가(할인률 적용된 가격)
+    quantity: int
+    discount_rate: float
+
+# ConvenientStore --------------------------------------------------------- 
