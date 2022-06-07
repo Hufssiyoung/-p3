@@ -23,11 +23,8 @@ Person(이름->문자열,현재 가진 돈->0이상의 정수, 임금->1이상�
 class Person(metaclass=ABCMeta):
 
     def __init__(self, input_name, input_money=0, input_wage=10):
-        try:
-            if (input_money < 0) or (input_wage <= 0):
-                raise PersonInitException
-        except PersonInitException as error:
-            print(error)
+        if (input_money < 0) or (input_wage <= 0):
+            raise PersonInitException
 
         self.__name = input_name
         self.__money = input_money
